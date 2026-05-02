@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Happy Anniversary ❤️</title>
+<style>
+    body {
+        margin: 0;
+        font-family: 'Arial', sans-serif;
+        background: linear-gradient(120deg, #ff9a9e, #fad0c4);
+        color: white;
+        text-align: center;
+        overflow: hidden;
+    }
+
+    .container {
+        position: relative;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    h1 {
+        font-size: 3em;
+        margin-bottom: 10px;
+    }
+
+    p {
+        font-size: 1.5em;
+        max-width: 600px;
+        margin: 20px auto;
+    }
+
+    button {
+        padding: 15px 25px;
+        font-size: 1.2em;
+        border: none;
+        border-radius: 30px;
+        background: white;
+        color: #ff6b81;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    button:hover {
+        background: #ffe6ea;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .heart {
+        position: fixed;
+        color: red;
+        animation: float 5s linear infinite;
+    }
+
+    @keyframes float {
+        from {
+            transform: translateY(100vh);
+            opacity: 1;
+        }
+        to {
+            transform: translateY(-10vh);
+            opacity: 0;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>Happy Anniversary ❤️</h1>
+    <p>Click the button for a surprise...</p>
+    <button onclick="showMessage()">Open My Heart 💌</button>
+
+    <div id="message" class="hidden">
+        <p>
+            From the moment we met, my world became brighter.  
+            Every laugh, every memory, every second with you  
+            is something I treasure deeply.  
+
+            Happy Anniversary, my love. ❤️  
+        </p>
+    </div>
+</div>
+
+<script>
+function showMessage() {
+    document.getElementById("message").classList.remove("hidden");
+    createHearts();
+}
+
+function createHearts() {
+    for (let i = 0; i < 30; i++) {
+        let heart = document.createElement("div");
+        heart.className = "heart";
+        heart.innerHTML = "❤️";
+        heart.style.left = Math.random() * 100 + "vw";
+        heart.style.fontSize = Math.random() * 20 + 10 + "px";
+        heart.style.animationDuration = (Math.random() * 3 + 2) + "s";
+        document.body.appendChild(heart);
+
+        setTimeout(() => heart.remove(), 5000);
+    }
+}
+</script>
+
+</body>
+</html>
