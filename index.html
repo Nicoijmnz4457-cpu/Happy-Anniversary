@@ -3,68 +3,120 @@
 <head>
 <meta charset="UTF-8">
 <title>Happy Anniversary ❤️</title>
+
 <style>
-    body {
-        margin: 0;
-        font-family: 'Arial', sans-serif;
-        background: linear-gradient(120deg, #ff9a9e, #fad0c4);
-        color: white;
-        text-align: center;
-        overflow: hidden;
-    }
+body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(120deg, #ff9a9e, #fad0c4);
+    color: white;
+    text-align: center;
+    overflow-x: hidden;
+}
 
-    .container {
-        position: relative;
-        top: 50%;
-        transform: translateY(-50%);
-    }
+/* Main layout */
+.container {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+}
 
-    h1 {
-        font-size: 3em;
-        margin-bottom: 10px;
-    }
+h1 { font-size: 3em; }
 
-    p {
-        font-size: 1.5em;
-        max-width: 600px;
-        margin: 20px auto;
-    }
+p {
+    font-size: 1.5em;
+    max-width: 600px;
+    margin: 20px auto;
+}
 
-    button {
-        padding: 15px 25px;
-        font-size: 1.2em;
-        border: none;
-        border-radius: 30px;
-        background: white;
-        color: #ff6b81;
-        cursor: pointer;
-        transition: 0.3s;
-    }
+button {
+    padding: 15px 25px;
+    font-size: 1.2em;
+    border: none;
+    border-radius: 30px;
+    background: white;
+    color: #ff6b81;
+    cursor: pointer;
+}
 
-    button:hover {
-        background: #ffe6ea;
-    }
+.hidden { display: none; }
 
-    .hidden {
-        display: none;
-    }
+input {
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+}
 
-    .heart {
-        position: fixed;
-        color: red;
-        animation: float 5s linear infinite;
-    }
+/* Floating hearts */
+.heart {
+    position: fixed;
+    color: red;
+    animation: float 5s linear infinite;
+}
 
-    @keyframes float {
-        from {
-            transform: translateY(100vh);
-            opacity: 1;
-        }
-        to {
-            transform: translateY(-10vh);
-            opacity: 0;
-        }
-    }
+@keyframes float {
+    from { transform: translateY(100vh); opacity: 1; }
+    to { transform: translateY(-10vh); opacity: 0; }
+}
+
+/* Loading screen */
+#loadingScreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #ff6b81;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 1s;
+}
+
+#loadingScreen.show {
+    opacity: 1;
+}
+
+/* Progress bar */
+#progressContainer {
+    width: 60%;
+    height: 10px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 20px;
+    margin-top: 20px;
+    overflow: hidden;
+}
+
+#progressBar {
+    width: 0%;
+    height: 100%;
+    background: white;
+}
+
+/* Final message */
+#finalMessage {
+    font-size: 1.6em;
+    margin-top: 20px;
+    max-width: 700px;
+}
+
+/* Photo reveal */
+#finalPhoto {
+    width: 260px;
+    border-radius: 20px;
+    margin-top: 20px;
+    opacity: 0;
+    transform: scale(0.9);
+    transition: all 1.5s ease;
+}
+
+#finalPhoto.show {
+    opacity: 1;
+    transform: scale(1);
+}
 </style>
 </head>
 
@@ -73,6 +125,7 @@
 <div class="container">
     <h1>Happy Anniversary ❤️</h1>
     <p>Click the button for a surprise...</p>
+
     <button onclick="showMessage()">Open My Heart 💌</button>
 
     <div id="message" class="hidden">
@@ -81,9 +134,35 @@
             Every laugh, every memory, every second with you  
             is something I treasure deeply.  
 
-            Happy Anniversary, my love. ❤️  
+            Happy Anniversary ❤️  
         </p>
+
+        <button onclick="startGame()">Play a Secret Game 🎮</button>
+
+        <div id="game" class="hidden">
+            <p id="question">Where did we first meet? 💭</p>
+
+            <input type="text" id="answer">
+            <br><br>
+
+            <button onclick="checkAnswer()">Submit</button>
+            <p id="gameResponse"></p>
+        </div>
     </div>
+</div>
+
+<!-- LOADING SCREEN -->
+<div id="loadingScreen">
+    <p id="loadingText">Unlocking your final message... ❤️</p>
+
+    <div id="progressContainer">
+        <div id="progressBar"></div>
+    </div>
+
+    <div id="finalMessage"></div>
+
+    <!-- YOUR PHOTO -->
+    <img id="finalPhoto" src="photo.jpg" class="hidden" alt="Us ❤️">
 </div>
 
 <script>
@@ -98,12 +177,99 @@ function createHearts() {
         heart.className = "heart";
         heart.innerHTML = "❤️";
         heart.style.left = Math.random() * 100 + "vw";
-        heart.style.fontSize = Math.random() * 20 + 10 + "px";
+        heart.style.fontSize = (Math.random() * 20 + 10) + "px";
         heart.style.animationDuration = (Math.random() * 3 + 2) + "s";
         document.body.appendChild(heart);
-
         setTimeout(() => heart.remove(), 5000);
     }
+}
+
+function startGame() {
+    const game = document.getElementById("game");
+    game.classList.remove("hidden");
+    game.scrollIntoView({ behavior: "smooth" });
+}
+
+let step = 0;
+
+function checkAnswer() {
+    const input = document.getElementById("answer");
+    const answer = input.value.toLowerCase();
+    const response = document.getElementById("gameResponse");
+    const question = document.getElementById("question");
+
+    if (step === 0) {
+        if (answer.includes("fortnite")) { // CHANGE THIS
+            response.innerHTML = "Correct ❤️";
+            question.innerHTML = "What was our first date? 🌙";
+            input.value = "";
+            step++;
+        } else {
+            response.innerHTML = "Try again 😄";
+        }
+    } 
+    
+    else if (step === 1) {
+        if (answer.includes("museum")) { // CHANGE THIS
+            response.innerHTML = "Perfect ❤️";
+            showLoadingScreen();
+        } else {
+            response.innerHTML = "Not quite 😏";
+        }
+    }
+}
+
+// LOADING + PROGRESS
+function showLoadingScreen() {
+    const loading = document.getElementById("loadingScreen");
+    const progressBar = document.getElementById("progressBar");
+
+    loading.classList.add("show");
+
+    let progress = 0;
+
+    let interval = setInterval(() => {
+        progress += 2;
+        progressBar.style.width = progress + "%";
+
+        if (progress >= 100) {
+            clearInterval(interval);
+            startTypewriter();
+        }
+    }, 40);
+}
+
+// TYPEWRITER
+function startTypewriter() {
+    const text = "You unlocked my final message ❤️\n\nI’d choose you in every lifetime.";
+    const container = document.getElementById("finalMessage");
+    const loadingText = document.getElementById("loadingText");
+
+    loadingText.innerHTML = "";
+
+    let i = 0;
+
+    function type() {
+        if (i < text.length) {
+            container.innerHTML += text.charAt(i) === "\n" ? "<br>" : text.charAt(i);
+            i++;
+            setTimeout(type, 40);
+        } else {
+            showPhoto();
+        }
+    }
+
+    type();
+}
+
+// PHOTO REVEAL
+function showPhoto() {
+    const photo = document.getElementById("finalPhoto");
+    photo.classList.remove("hidden");
+
+    setTimeout(() => {
+        photo.classList.add("show");
+    }, 100);
 }
 </script>
 
