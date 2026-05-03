@@ -8,7 +8,7 @@
 
 <style>
 
-/* ================= MOBILE + BASE ================= */
+/* ================= BASE ================= */
 html, body {
     margin: 0;
     padding: 0;
@@ -20,7 +20,39 @@ html, body {
     text-align: center;
 }
 
+/* ================= ⭐ STAR BACKGROUND ================= */
+#stars {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.star {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    background: white;
+    border-radius: 50%;
+    opacity: 0.6;
+    animation: floatStar linear infinite;
+}
+
+@keyframes floatStar {
+    from {
+        transform: translateY(100vh);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(-10vh);
+        opacity: 1;
+    }
+}
+
+/* content above stars */
 .container {
+    position: relative;
+    z-index: 2;
     padding: 20px;
     padding-top: env(safe-area-inset-top);
 }
@@ -30,33 +62,26 @@ html, body {
     position: fixed;
     inset: 0;
     background: black;
-    z-index: 2000;
+    z-index: 3000;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    animation: fadeOutIntro 2.5s ease forwards;
+    animation: fadeOut 2.5s ease forwards;
     animation-delay: 2.5s;
 }
 
-#intro h1 {
+#intro h1, #intro p {
     opacity: 0;
     animation: fadeIn 1.5s ease forwards;
 }
 
 #intro p {
-    opacity: 0;
-    animation: fadeIn 1.5s ease forwards;
     animation-delay: 0.8s;
 }
 
-@keyframes fadeIn {
-    to { opacity: 1; }
-}
-
-@keyframes fadeOutIntro {
-    to { opacity: 0; visibility: hidden; }
-}
+@keyframes fadeIn { to { opacity: 1; } }
+@keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
 
 /* ================= UI ================= */
 h1 { font-size: 2.5em; }
@@ -91,6 +116,7 @@ input {
     position: fixed;
     color: red;
     animation: float 5s linear infinite;
+    z-index: 5;
 }
 
 @keyframes float {
@@ -107,7 +133,7 @@ input {
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    z-index: 999;
+    z-index: 1000;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.8s ease;
@@ -133,7 +159,7 @@ input {
     background: white;
 }
 
-/* ================= FINAL ================= */
+/* ================= FINAL CONTENT ================= */
 #finalMessage {
     font-size: 1.4em;
     margin-top: 20px;
@@ -147,6 +173,7 @@ input {
     opacity: 0;
     transform: scale(0.9);
     transition: all 1.5s ease;
+    z-index: 2;
 }
 
 #finalPhoto.show {
@@ -154,17 +181,24 @@ input {
     transform: scale(1);
 }
 
-/* 10 MONTHS TEXT */
-#finalCelebration {
-    margin-top: 20px;
+#loveText {
     font-size: 2em;
-    animation: fadeIn 2s ease forwards;
+    margin-top: 15px;
+    opacity: 0;
+    transition: 1s ease;
+}
+
+#loveText.show {
+    opacity: 1;
 }
 
 </style>
 </head>
 
 <body>
+
+<!-- ⭐ STAR BACKGROUND -->
+<div id="stars"></div>
 
 <!-- CINEMATIC INTRO -->
 <div id="intro">
@@ -178,7 +212,7 @@ input {
     <h1>Happy Anniversary ❤️</h1>
     <p>Click below for a surprise...</p>
 
-    <button onclick="showMessage()">Open My Heart 💌</button>
+    <button onclick="showMessage(); vibrate(30);">Open My Heart 💌</button>
 
     <div id="message" class="hidden">
 
@@ -188,13 +222,13 @@ input {
             Happy Anniversary ❤️  
         </p>
 
-        <button onclick="startGame()">Play a Secret Game 🎮</button>
+        <button onclick="startGame(); vibrate(40);">Play a Secret Game 🎮</button>
 
         <div id="game" class="hidden">
             <p id="question">Where did we first meet? 💭</p>
             <input type="text" id="answer">
             <br><br>
-            <button onclick="checkAnswer()">Submit</button>
+            <button onclick="checkAnswer(); vibrate(50);">Submit</button>
             <p id="gameResponse"></p>
         </div>
 
@@ -213,17 +247,28 @@ input {
 
     <img id="finalPhoto" src="photo.jpg" alt="Memory ❤️">
 
-    <div id="finalCelebration" class="hidden">
-        <h2>Happy 10 Months ❤️</h2>
-    </div>
+    <div id="loveText">I love you ❤️</div>
 </div>
 
 <script>
 
-/* intro auto remove (safety fallback) */
-setTimeout(() => {
-    document.getElementById("intro").style.display = "none";
-}, 3000);
+/* ⭐ STAR GENERATOR */
+const starContainer = document.getElementById("stars");
+
+for (let i = 0; i < 60; i++) {
+    let s = document.createElement("div");
+    s.className = "star";
+    s.style.left = Math.random() * 100 + "vw";
+    s.style.top = Math.random() * 100 + "vh";
+    s.style.animationDuration = (Math.random() * 6 + 4) + "s";
+    s.style.opacity = Math.random();
+    starContainer.appendChild(s);
+}
+
+/* vibration */
+function vibrate(ms) {
+    if (navigator.vibrate) navigator.vibrate(ms);
+}
 
 /* hearts */
 function showMessage() {
@@ -315,26 +360,26 @@ function typeWriter() {
     type();
 }
 
-/* photo + final reveal */
+/* final reveal */
 function showPhoto() {
     const img = document.getElementById("finalPhoto");
-    const celebrate = document.getElementById("finalCelebration");
-
-    img.classList.remove("hidden");
+    const love = document.getElementById("loveText");
 
     setTimeout(() => {
         img.classList.add("show");
-    }, 200);
+        vibrate(120);
+    }, 300);
 
     setTimeout(() => {
-        celebrate.classList.remove("hidden");
+        love.classList.add("show");
+        vibrate([80, 50, 80]);
         finalHearts();
-    }, 2000);
+    }, 1500);
 }
 
 /* final hearts */
 function finalHearts() {
-    for (let i = 0; i < 40; i++) {
+    for (let i = 0; i < 45; i++) {
         let h = document.createElement("div");
         h.className = "heart";
         h.innerHTML = "❤️";
