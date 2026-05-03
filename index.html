@@ -13,41 +13,61 @@ html, body {
     margin: 0;
     padding: 0;
     height: 100%;
-    overflow-x: hidden;
+    overflow: hidden;
     font-family: Arial, sans-serif;
-    background: linear-gradient(120deg, #ff9a9e, #fad0c4);
+    background: #0b0014;
     color: white;
     text-align: center;
 }
 
-/* ================= STAR BACKGROUND ================= */
+/* ================= STAR LAYER ================= */
 #stars {
     position: fixed;
     inset: 0;
     z-index: 0;
-    overflow: hidden;
 }
 
 .star {
     position: absolute;
-    width: 3px;
-    height: 3px;
+    width: 2px;
+    height: 2px;
     background: white;
     border-radius: 50%;
-    opacity: 0.6;
-    animation: floatStar linear infinite;
+    opacity: 0.8;
 }
 
-@keyframes floatStar {
-    from { transform: translateY(100vh); opacity: 0; }
-    to { transform: translateY(-10vh); opacity: 1; }
+/* ================= FINAL AURORA BACKGROUND ================= */
+#finalGlow {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 2s ease;
+    pointer-events: none;
+
+    background: radial-gradient(circle at 20% 30%, rgba(255, 120, 180, 0.35), transparent 40%),
+                radial-gradient(circle at 80% 20%, rgba(120, 200, 255, 0.25), transparent 45%),
+                radial-gradient(circle at 50% 80%, rgba(255, 255, 255, 0.12), transparent 50%),
+                linear-gradient(120deg, #0b0014, #1a0033, #12001f);
+
+    animation: auroraPulse 6s ease-in-out infinite;
+}
+
+#finalGlow.show {
+    opacity: 1;
+}
+
+@keyframes auroraPulse {
+    0% { filter: brightness(1); }
+    50% { filter: brightness(1.3); }
+    100% { filter: brightness(1); }
 }
 
 /* ================= COMET CANVAS ================= */
 #cometCanvas {
     position: fixed;
     inset: 0;
-    z-index: 1;
+    z-index: 2;
     pointer-events: none;
     opacity: 0;
     transition: opacity 1s ease;
@@ -60,7 +80,7 @@ html, body {
 /* ================= CONTENT ================= */
 .container {
     position: relative;
-    z-index: 2;
+    z-index: 5;
     padding: 20px;
     padding-top: env(safe-area-inset-top);
 }
@@ -70,7 +90,7 @@ html, body {
     position: fixed;
     inset: 0;
     background: black;
-    z-index: 3000;
+    z-index: 9999;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -90,95 +110,23 @@ html, body {
 @keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
 
 /* ================= UI ================= */
-h1 { font-size: 2.5em; }
-
-p {
-    font-size: 1.2em;
-    max-width: 600px;
-    margin: 20px auto;
-}
-
 button {
     padding: 15px 25px;
-    font-size: 1.1em;
-    border: none;
     border-radius: 30px;
-    background: white;
-    color: #ff6b81;
-    cursor: pointer;
-}
-
-.hidden { display: none; }
-
-input {
-    padding: 10px;
-    border-radius: 10px;
     border: none;
-    text-align: center;
+    cursor: pointer;
+    font-size: 1rem;
 }
 
-/* ================= HEARTS ================= */
-.heart {
-    position: fixed;
-    color: red;
-    animation: float 5s linear infinite;
-    z-index: 5;
-}
-
-@keyframes float {
-    from { transform: translateY(100vh); opacity: 1; }
-    to { transform: translateY(-10vh); opacity: 0; }
-}
-
-/* ================= LOADING ================= */
-#loadingScreen {
-    position: fixed;
-    inset: 0;
-    background: #ff6b81;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    z-index: 1000;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.8s ease;
-}
-
-#loadingScreen.show {
-    opacity: 1;
-    pointer-events: all;
-}
-
-#progressContainer {
-    width: 60%;
-    height: 10px;
-    background: rgba(255,255,255,0.3);
-    border-radius: 20px;
-    margin-top: 20px;
-    overflow: hidden;
-}
-
-#progressBar {
-    width: 0%;
-    height: 100%;
-    background: white;
-}
-
-/* ================= FINAL ================= */
-#finalMessage {
-    font-size: 1.4em;
-    margin-top: 20px;
-    max-width: 700px;
-}
-
+/* ================= FINAL PHOTO ================= */
 #finalPhoto {
     width: 260px;
     border-radius: 20px;
     margin-top: 20px;
     opacity: 0;
-    transform: scale(0.9);
-    transition: all 1.5s ease;
+    transform: scale(0.8);
+    transition: 1.5s ease;
+    z-index: 10;
 }
 
 #finalPhoto.show {
@@ -188,7 +136,6 @@ input {
 
 #loveText {
     font-size: 2em;
-    margin-top: 15px;
     opacity: 0;
     transition: 1s ease;
 }
@@ -202,13 +149,11 @@ input {
 
 <body>
 
-<!-- ⭐ STARS -->
 <div id="stars"></div>
+<div id="finalGlow"></div>
 
-<!-- 🌠 COMETS -->
 <canvas id="cometCanvas"></canvas>
 
-<!-- INTRO -->
 <div id="intro">
     <h1>For You ❤️</h1>
     <p>A small experience… made with love</p>
@@ -217,115 +162,96 @@ input {
 <div class="container">
 
     <h1>Happy Anniversary ❤️</h1>
-    <p>Click below for a surprise...</p>
 
-    <button onclick="showMessage(); vibrate(30);">Open My Heart 💌</button>
+    <button onclick="showLoading()">Open Surprise 💌</button>
 
-    <div id="message" class="hidden">
-
-        <p>
-            From the moment we met, my world became brighter.  
-            Happy Anniversary ❤️  
-        </p>
-
-        <button onclick="startGame(); vibrate(40);">Play a Secret Game 🎮</button>
-
-        <div id="game" class="hidden">
-            <p id="question">Where did we first meet? 💭</p>
-            <input type="text" id="answer">
-            <br><br>
-            <button onclick="checkAnswer(); vibrate(50);">Submit</button>
-            <p id="gameResponse"></p>
-        </div>
-
-    </div>
-</div>
-
-<!-- LOADING -->
-<div id="loadingScreen">
-    <p id="loadingText">Unlocking your final message... ❤️</p>
-
-    <div id="progressContainer">
-        <div id="progressBar"></div>
+    <div id="loadingScreen">
+        <div id="finalMessage"></div>
+        <img id="finalPhoto" src="photo.jpg">
+        <div id="loveText">I love you ❤️</div>
     </div>
 
-    <div id="finalMessage"></div>
-
-    <img id="finalPhoto" src="photo.jpg" alt="Memory ❤️">
-
-    <div id="loveText">I love you ❤️</div>
 </div>
 
 <script>
 
 /* ================= STARS ================= */
 const starContainer = document.getElementById("stars");
+const stars = [];
 
-for (let i = 0; i < 70; i++) {
-    let s = document.createElement("div");
-    s.className = "star";
-    s.style.left = Math.random() * 100 + "vw";
-    s.style.top = Math.random() * 100 + "vh";
-    s.style.animationDuration = (Math.random() * 6 + 4) + "s";
-    starContainer.appendChild(s);
+const STAR_COUNT = 120;
+const CENTER = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+
+function createStars() {
+    for (let i = 0; i < STAR_COUNT; i++) {
+        let star = document.createElement("div");
+        star.className = "star";
+
+        let x = Math.random() * window.innerWidth;
+        let y = Math.random() * window.innerHeight;
+
+        star.style.left = x + "px";
+        star.style.top = y + "px";
+
+        starContainer.appendChild(star);
+
+        stars.push({
+            el: star,
+            x, y,
+            vx: 0,
+            vy: 0
+        });
+    }
 }
+createStars();
 
-/* ================= COMETS (GLOWING TAILS) ================= */
+/* ================= COMETS ================= */
 const canvas = document.getElementById("cometCanvas");
 const ctx = canvas.getContext("2d");
 
-let w, h;
 function resize() {
-    w = canvas.width = window.innerWidth;
-    h = canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 }
-window.addEventListener("resize", resize);
 resize();
+window.addEventListener("resize", resize);
 
 let comets = [];
 
 function createComet() {
     return {
-        x: Math.random() * w,
-        y: Math.random() * h * 0.5,
-        vx: Math.random() * 6 + 4,
-        vy: Math.random() * 6 + 4,
-        len: Math.random() * 120 + 80,
-        hue: Math.random() * 60 + 300 // pink/purple glow
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height * 0.5,
+        vx: 6 + Math.random() * 4,
+        vy: 6 + Math.random() * 4,
+        len: 120 + Math.random() * 80,
+        hue: 300 + Math.random() * 60
     };
 }
 
 function drawComets() {
     ctx.fillStyle = "rgba(0,0,0,0.25)";
-    ctx.fillRect(0, 0, w, h);
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     comets.forEach(c => {
+
         let grad = ctx.createLinearGradient(c.x, c.y, c.x - c.len, c.y - c.len);
 
         grad.addColorStop(0, `hsla(${c.hue},100%,80%,1)`);
-        grad.addColorStop(0.4, `hsla(${c.hue},100%,70%,0.6)`);
-        grad.addColorStop(1, "rgba(255,255,255,0)");
+        grad.addColorStop(1, "transparent");
 
         ctx.strokeStyle = grad;
-        ctx.lineWidth = 3;
+        ctx.lineWidth = 2;
+
         ctx.beginPath();
         ctx.moveTo(c.x, c.y);
         ctx.lineTo(c.x - c.len, c.y - c.len);
         ctx.stroke();
 
-        // glow head
-        ctx.beginPath();
-        ctx.fillStyle = `hsla(${c.hue},100%,85%,1)`;
-        ctx.shadowBlur = 20;
-        ctx.shadowColor = `hsla(${c.hue},100%,70%,1)`;
-        ctx.arc(c.x, c.y, 3, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.shadowBlur = 0;
-
         c.x += c.vx;
         c.y += c.vy;
 
-        if (c.x > w || c.y > h) {
+        if (c.x > canvas.width || c.y > canvas.height) {
             Object.assign(c, createComet());
         }
     });
@@ -333,96 +259,83 @@ function drawComets() {
     requestAnimationFrame(drawComets);
 }
 
-function startComets() {
-    canvas.classList.add("show");
-    for (let i = 0; i < 7; i++) {
-        comets.push(createComet());
+/* ================= STAR COLLAPSE ================= */
+function collapseStarsToPhoto() {
+    const rect = document.getElementById("finalPhoto").getBoundingClientRect();
+
+    const targetX = rect.left + rect.width / 2;
+    const targetY = rect.top + rect.height / 2;
+
+    stars.forEach(s => {
+        let dx = targetX - s.x;
+        let dy = targetY - s.y;
+
+        s.vx = dx * 0.02;
+        s.vy = dy * 0.02;
+    });
+
+    function animate() {
+        stars.forEach(s => {
+            s.x += s.vx;
+            s.y += s.vy;
+
+            s.el.style.left = s.x + "px";
+            s.el.style.top = s.y + "px";
+            s.el.style.opacity *= 0.98;
+        });
+
+        requestAnimationFrame(animate);
     }
-    drawComets();
+
+    animate();
 }
 
 /* ================= MAIN ================= */
-function vibrate(ms) {
-    if (navigator.vibrate) navigator.vibrate(ms);
-}
-
-function showMessage() {
-    document.getElementById("message").classList.remove("hidden");
-}
-
-function startGame() {
-    document.getElementById("game").classList.remove("hidden");
-}
-
-function checkAnswer() {
-    const val = document.getElementById("answer").value.toLowerCase();
-    const res = document.getElementById("gameResponse");
-    const q = document.getElementById("question");
-
-    if (val.includes("fortnite")) {
-        q.innerHTML = "What was our first date? 🌙";
-        res.innerHTML = "Correct ❤️";
-        showLoading();
-    } else {
-        res.innerHTML = "Try again 😄";
-    }
-}
-
-/* ================= LOADING ================= */
 function showLoading() {
-    const load = document.getElementById("loadingScreen");
-    const bar = document.getElementById("progressBar");
-
-    load.classList.add("show");
-
-    let p = 0;
-    let interval = setInterval(() => {
-        p += 2;
-        bar.style.width = p + "%";
-
-        if (p >= 100) {
-            clearInterval(interval);
-            typeWriter();
-        }
-    }, 25);
+    typeWriter();
 }
 
-/* ================= TYPE ================= */
 function typeWriter() {
     const text = "You unlocked my final message ❤️\n\nI’d choose you in every lifetime.";
     const box = document.getElementById("finalMessage");
 
     let i = 0;
+
     function type() {
         if (i < text.length) {
             box.innerHTML += text[i] === "\n" ? "<br>" : text[i];
             i++;
             setTimeout(type, 40);
         } else {
-            showPhoto();
+            showFinal();
         }
     }
     type();
 }
 
-/* ================= FINAL REVEAL ================= */
-function showPhoto() {
+/* ================= FINAL SEQUENCE ================= */
+function showFinal() {
+
     const img = document.getElementById("finalPhoto");
     const love = document.getElementById("loveText");
+    const glow = document.getElementById("finalGlow");
 
-    setTimeout(() => {
-        img.classList.add("show");
-        vibrate(120);
-    }, 300);
+    img.classList.add("show");
 
     setTimeout(() => {
         love.classList.add("show");
-        vibrate([80, 50, 80]);
 
-        // 🌠 START COMETS HERE
-        startComets();
+        glow.classList.add("show");
 
-    }, 1500);
+        canvas.classList.add("show");
+
+        comets = Array.from({ length: 6 }, createComet);
+
+        drawComets();
+
+        collapseStarsToPhoto();
+
+    }, 1200);
 }
 
 </script>
