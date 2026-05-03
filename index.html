@@ -2,36 +2,95 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
 <title>Happy Anniversary ❤️</title>
 
 <style>
-body {
+
+/* =========================
+   🌐 MOBILE FULLSCREEN POLISH
+========================= */
+html, body {
     margin: 0;
-    font-family: 'Arial', sans-serif;
+    padding: 0;
+    height: 100%;
+    overflow-x: hidden;
+    font-family: Arial, sans-serif;
+    -webkit-text-size-adjust: 100%;
+    touch-action: manipulation;
+}
+
+body {
     background: linear-gradient(120deg, #ff9a9e, #fad0c4);
     color: white;
     text-align: center;
-    overflow-x: hidden;
 }
 
-/* Main layout */
+/* Safe spacing for iPhones (notch fix) */
 .container {
     position: relative;
-    top: 50%;
-    transform: translateY(-50%);
+    padding: 20px;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
 }
 
-h1 { font-size: 3em; }
+/* =========================
+   🎬 CINEMATIC INTRO
+========================= */
+#intro {
+    position: fixed;
+    inset: 0;
+    background: black;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    animation: fadeOutIntro 2.5s ease forwards;
+    animation-delay: 2.5s;
+}
+
+#intro h1 {
+    font-size: 2em;
+    opacity: 0;
+    animation: fadeIn 1.5s ease forwards;
+}
+
+#intro p {
+    opacity: 0;
+    animation: fadeIn 1.5s ease forwards;
+    animation-delay: 0.8s;
+}
+
+@keyframes fadeIn {
+    to { opacity: 1; }
+}
+
+@keyframes fadeOutIntro {
+    to {
+        opacity: 0;
+        visibility: hidden;
+    }
+}
+
+/* =========================
+   MAIN CONTENT
+========================= */
+
+h1 {
+    font-size: 2.5em;
+}
 
 p {
-    font-size: 1.5em;
+    font-size: 1.2em;
     max-width: 600px;
     margin: 20px auto;
 }
 
 button {
     padding: 15px 25px;
-    font-size: 1.2em;
+    font-size: 1.1em;
     border: none;
     border-radius: 30px;
     background: white;
@@ -45,9 +104,13 @@ input {
     padding: 10px;
     border-radius: 10px;
     border: none;
+    text-align: center;
 }
 
-/* Floating hearts */
+/* =========================
+   ❤️ HEARTS
+========================= */
+
 .heart {
     position: fixed;
     color: red;
@@ -59,13 +122,13 @@ input {
     to { transform: translateY(-10vh); opacity: 0; }
 }
 
-/* Loading screen */
+/* =========================
+   LOADING SCREEN
+========================= */
+
 #loadingScreen {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    inset: 0;
     background: #ff6b81;
     display: flex;
     justify-content: center;
@@ -73,14 +136,16 @@ input {
     flex-direction: column;
     z-index: 999;
     opacity: 0;
-    transition: opacity 1s;
+    pointer-events: none;
+    transition: opacity 0.8s ease;
 }
 
 #loadingScreen.show {
     opacity: 1;
+    pointer-events: all;
 }
 
-/* Progress bar */
+/* progress bar */
 #progressContainer {
     width: 60%;
     height: 10px;
@@ -96,14 +161,14 @@ input {
     background: white;
 }
 
-/* Final message */
+/* final message */
 #finalMessage {
-    font-size: 1.6em;
+    font-size: 1.4em;
     margin-top: 20px;
     max-width: 700px;
 }
 
-/* Photo reveal */
+/* photo */
 #finalPhoto {
     width: 260px;
     border-radius: 20px;
@@ -117,23 +182,31 @@ input {
     opacity: 1;
     transform: scale(1);
 }
+
 </style>
 </head>
 
 <body>
 
+<!-- 🎬 CINEMATIC INTRO -->
+<div id="intro">
+    <h1>For You ❤️</h1>
+    <p>One small experience… made with love</p>
+</div>
+
+<!-- MAIN PAGE -->
 <div class="container">
+
     <h1>Happy Anniversary ❤️</h1>
-    <p>Click the button for a surprise...</p>
+    <p>Click below for a surprise...</p>
 
     <button onclick="showMessage()">Open My Heart 💌</button>
 
     <div id="message" class="hidden">
+
         <p>
             From the moment we met, my world became brighter.  
-            Every laugh, every memory, every second with you  
-            is something I treasure deeply.  
-
+            Every laugh, every memory, every second with you is something I treasure deeply.  
             Happy Anniversary ❤️  
         </p>
 
@@ -148,10 +221,11 @@ input {
             <button onclick="checkAnswer()">Submit</button>
             <p id="gameResponse"></p>
         </div>
+
     </div>
 </div>
 
-<!-- LOADING SCREEN -->
+<!-- LOADING -->
 <div id="loadingScreen">
     <p id="loadingText">Unlocking your final message... ❤️</p>
 
@@ -161,97 +235,92 @@ input {
 
     <div id="finalMessage"></div>
 
-    <!-- YOUR PHOTO -->
-    <img id="finalPhoto" src="photo.jpg" class="hidden" alt="Us ❤️">
+    <img id="finalPhoto" src="photo.jpg" alt="Memory ❤️">
 </div>
 
 <script>
+
+/* hearts */
 function showMessage() {
     document.getElementById("message").classList.remove("hidden");
     createHearts();
 }
 
 function createHearts() {
-    for (let i = 0; i < 30; i++) {
-        let heart = document.createElement("div");
-        heart.className = "heart";
-        heart.innerHTML = "❤️";
-        heart.style.left = Math.random() * 100 + "vw";
-        heart.style.fontSize = (Math.random() * 20 + 10) + "px";
-        heart.style.animationDuration = (Math.random() * 3 + 2) + "s";
-        document.body.appendChild(heart);
-        setTimeout(() => heart.remove(), 5000);
+    for (let i = 0; i < 25; i++) {
+        let h = document.createElement("div");
+        h.className = "heart";
+        h.innerHTML = "❤️";
+        h.style.left = Math.random() * 100 + "vw";
+        h.style.fontSize = (Math.random() * 20 + 10) + "px";
+        h.style.animationDuration = (Math.random() * 3 + 2) + "s";
+        document.body.appendChild(h);
+        setTimeout(() => h.remove(), 5000);
     }
 }
 
-function startGame() {
-    const game = document.getElementById("game");
-    game.classList.remove("hidden");
-    game.scrollIntoView({ behavior: "smooth" });
-}
-
+/* game */
 let step = 0;
+
+function startGame() {
+    document.getElementById("game").classList.remove("hidden");
+}
 
 function checkAnswer() {
     const input = document.getElementById("answer");
-    const answer = input.value.toLowerCase();
-    const response = document.getElementById("gameResponse");
-    const question = document.getElementById("question");
+    const val = input.value.toLowerCase();
+    const res = document.getElementById("gameResponse");
+    const q = document.getElementById("question");
 
     if (step === 0) {
-        if (answer.includes("fortnite")) { // CHANGE THIS
-            response.innerHTML = "Correct ❤️";
-            question.innerHTML = "What was our first date? 🌙";
+        if (val.includes("fortnite")) {
+            res.innerHTML = "Correct ❤️";
+            q.innerHTML = "What was our first date? 🌙";
             input.value = "";
             step++;
-        } else {
-            response.innerHTML = "Try again 😄";
-        }
-    } 
-    
-    else if (step === 1) {
-        if (answer.includes("museum")) { // CHANGE THIS
-            response.innerHTML = "Perfect ❤️";
-            showLoadingScreen();
-        } else {
-            response.innerHTML = "Not quite 😏";
-        }
+        } else res.innerHTML = "Try again 😄";
+    } else {
+        if (val.includes("museum")) {
+            res.innerHTML = "Perfect ❤️";
+            showLoading();
+        } else res.innerHTML = "Not quite 😏";
     }
 }
 
-// LOADING + PROGRESS
-function showLoadingScreen() {
-    const loading = document.getElementById("loadingScreen");
-    const progressBar = document.getElementById("progressBar");
+/* loading */
+function showLoading() {
+    const load = document.getElementById("loadingScreen");
+    const bar = document.getElementById("progressBar");
 
-    loading.classList.add("show");
+    load.classList.add("show");
 
-    let progress = 0;
+    let p = 0;
 
     let interval = setInterval(() => {
-        progress += 2;
-        progressBar.style.width = progress + "%";
+        p += 2;
+        bar.style.width = p + "%";
 
-        if (progress >= 100) {
+        if (p >= 100) {
             clearInterval(interval);
-            startTypewriter();
+            typeWriter();
         }
-    }, 40);
+    }, 25);
 }
 
-// TYPEWRITER
-function startTypewriter() {
+/* typewriter */
+function typeWriter() {
     const text = "You unlocked my final message ❤️\n\nI’d choose you in every lifetime.";
-    const container = document.getElementById("finalMessage");
+    const box = document.getElementById("finalMessage");
     const loadingText = document.getElementById("loadingText");
 
     loadingText.innerHTML = "";
+    box.innerHTML = "";
 
     let i = 0;
 
     function type() {
         if (i < text.length) {
-            container.innerHTML += text.charAt(i) === "\n" ? "<br>" : text.charAt(i);
+            box.innerHTML += text[i] === "\n" ? "<br>" : text[i];
             i++;
             setTimeout(type, 40);
         } else {
@@ -262,15 +331,16 @@ function startTypewriter() {
     type();
 }
 
-// PHOTO REVEAL
+/* photo */
 function showPhoto() {
-    const photo = document.getElementById("finalPhoto");
-    photo.classList.remove("hidden");
+    const img = document.getElementById("finalPhoto");
+    img.classList.remove("hidden");
 
     setTimeout(() => {
-        photo.classList.add("show");
-    }, 100);
+        img.classList.add("show");
+    }, 200);
 }
+
 </script>
 
 </body>
